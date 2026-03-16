@@ -1,67 +1,161 @@
 import { body } from "express-validator"
 
+// ─────────────────────────────────────────────
+//  AUTH VALIDATORS
+// ─────────────────────────────────────────────
 const userRegisterValidator = () => {
     return [
-    body("email")
-        .trim()
-        .notEmpty()
-        .withMessage("Email is required")
-        .isEmail()
-        .withMessage("Email is invaild"),
-    body("userName")
-        .trim()
-        .notEmpty()
-        .withMessage("UserName is required")
-        .isLowercase()
-        .withMessage("UserName should be in lowercase")
-        .isLength({min: 3})
-        .withMessage("User name must be atleast 3 characters"),
-    body("password")
-        .trim()
-        .notEmpty()
-        .withMessage("Password is required")
-    ]
-}
-const userLoginValidator = ()=>{
-    return[
         body("email")
-            .optional()
-            .isEmail()
-            .withMessage("Email is invaild"),
+            .trim()
+            .notEmpty().withMessage("Email is required")
+            .isEmail().withMessage("Email is invalid"),
+        body("userName")
+            .trim()
+            .notEmpty().withMessage("UserName is required")
+            .isLowercase().withMessage("UserName should be in lowercase")
+            .isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
         body("password")
-            .notEmpty()
-            .withMessage("Password is required")
-    ]
-}
-const userChangeCurrentPasswordValidator = ()=>{
-    return [
-        body("oldPassword")
-            .notEmpty()
-            .withMessage("Old password is required"),
-        body("newPassword")
-            .notEmpty()
-            .withMessage("new password is required")
-    ]
-}
-const userForgotPasswordValidator = ()=>{
-    return [
-        body("email")
-            .notEmpty()
-            .withMessage("Email is required")
-            .isEmpty()
-            .withMessage("Email is invalid")
-    ]
-}
-const userResetForgotPasswordValidator = ()=>{
-    return [
-        body("newPassword")
-            .notEmpty()
-            .withMessage("Password is required")
+            .trim()
+            .notEmpty().withMessage("Password is required")
     ]
 }
 
-export { userRegisterValidator,userLoginValidator,
+const userLoginValidator = () => {
+    return [
+        body("email")
+            .optional()
+            .isEmail().withMessage("Email is invalid"),
+        body("password")
+            .notEmpty().withMessage("Password is required")
+    ]
+}
+
+const userChangeCurrentPasswordValidator = () => {
+    return [
+        body("oldPassword").notEmpty().withMessage("Old password is required"),
+        body("newPassword").notEmpty().withMessage("New password is required")
+    ]
+}
+
+const userForgotPasswordValidator = () => {
+    return [
+        body("email")
+            .notEmpty().withMessage("Email is required")
+            .isEmail().withMessage("Email is invalid")
+    ]
+}
+
+const userResetForgotPasswordValidator = () => {
+    return [
+        body("newPassword").notEmpty().withMessage("Password is required")
+    ]
+}
+
+// ─────────────────────────────────────────────
+//  PROJECT VALIDATORS
+// ─────────────────────────────────────────────
+const createProjectValidator = () => {
+    return [
+        body("name").notEmpty().withMessage("Name is required"),
+        body("description").optional()
+    ]
+}
+
+const addMemberToPojectValidator = () => {
+    return [
+        body("email")
+            .trim()
+            .notEmpty().withMessage("Email is required")
+            .isEmail().withMessage("Email is invalid"),
+        body("role").notEmpty().withMessage("Role is required")
+    ]
+}
+
+// ─────────────────────────────────────────────
+//  TASK VALIDATORS
+// ─────────────────────────────────────────────
+const createTaskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty().withMessage("Task title is required"),
+        body("description")
+            .optional(),
+        body("assignedTo")
+            .optional()
+            .isMongoId().withMessage("assignedTo must be a valid user ID"),
+        body("status")
+            .optional()
+            .isIn(["todo", "in_process", "done"])
+            .withMessage("Status must be one of: todo, in_process, done")
+    ]
+}
+
+const updateTaskValidator = () => {
+    return [
+        body("title")
+            .optional()
+            .trim()
+            .notEmpty().withMessage("Title cannot be empty"),
+        body("description")
+            .optional(),
+        body("assignedTo")
+            .optional()
+            .isMongoId().withMessage("assignedTo must be a valid user ID"),
+        body("status")
+            .optional()
+            .isIn(["todo", "in_process", "done"])
+            .withMessage("Status must be one of: todo, in_process, done")
+    ]
+}
+
+const updateTaskStatusValidator = () => {
+    return [
+        body("status")
+            .notEmpty().withMessage("Status is required")
+            .isIn(["todo", "in_process", "done"])
+            .withMessage("Status must be one of: todo, in_process, done")
+    ]
+}
+
+// ─────────────────────────────────────────────
+//  SUBTASK VALIDATORS
+// ─────────────────────────────────────────────
+const createSubTaskValidator = () => {
+    return [
+        body("title")
+            .trim()
+            .notEmpty().withMessage("Subtask title is required")
+    ]
+}
+
+const updateSubTaskValidator = () => {
+    return [
+        body("title")
+            .optional()
+            .trim()
+            .notEmpty().withMessage("Title cannot be empty"),
+        body("isCompleted")
+            .optional()
+            .isBoolean().withMessage("isCompleted must be a boolean value")
+    ]
+}
+
+export {
+    // Auth
+    userRegisterValidator,
+    userLoginValidator,
     userChangeCurrentPasswordValidator,
     userForgotPasswordValidator,
-    userResetForgotPasswordValidator
- }
+    userResetForgotPasswordValidator,
+    // Project
+    createProjectValidator,
+    addMemberToPojectValidator,
+    // Task
+    createTaskValidator,
+    updateTaskValidator,
+    updateTaskStatusValidator,
+    // SubTask
+    createSubTaskValidator,
+    updateSubTaskValidator
+}

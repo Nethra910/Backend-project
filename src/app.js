@@ -5,6 +5,10 @@ import cookieParser from "cookie-parser"
 import healthCareRoute from "./routes/healthcare.routes.js"
 import ApiInfo from "./routes/apiInfo.routes.js"
 import authRoute from "./routes/auth.route.js"
+import projectRoute from "./routes/project.routes.js"
+import taskRoute from "./routes/task.routes.js"
+import noteRoute from "./routes/note.routes.js"
+
 
 const app = express()
 app.use(cookieParser())
@@ -21,6 +25,12 @@ app.use(cors({
 app.use("/api/v1/healthcheck",healthCareRoute)
 app.use("/api/v1/info",ApiInfo)
 app.use("/api/v1/auth",authRoute)
+
+app.use("/api/v1/project",projectRoute)
+// Task router uses mergeParams — must be nested under /projects/:projectId
+app.use("/api/v1/projects/:projectId/tasks", taskRoute)
+app.use("/api/v1/projects/:projectId/notes", noteRoute)
+
 
 app.get("/",(req,res)=>{
   res.send("Hello world")
