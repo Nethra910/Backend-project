@@ -4,7 +4,7 @@ import Project from "../models/project.model.js"
 import ProjectMember from "../models/projectMember.model.js"
 import { ApiErrors } from "../utils/api_error.js"
 import { ApiResponce } from "../utils/api_responce.js"
-import { asyncHandler } from "../utils/asyncHandler.js"
+// import { asyncHandler } from "../utils/asyncHandler.js"
 
 const assertProjectMember = async (projectId, userId) => {
     const project = await Project.findById(projectId)
@@ -14,7 +14,7 @@ const assertProjectMember = async (projectId, userId) => {
     return { project, member }
 }
 
-const getNotes = asyncHandler(async (req, res) => {
+const getNotes = async (req, res) => {
     const { projectId } = req.params
     await assertProjectMember(projectId, req.user._id)
     const notes = await ProjectNote.aggregate([
@@ -24,9 +24,9 @@ const getNotes = asyncHandler(async (req, res) => {
         { $sort: { createdAt: -1 } }
     ])
     return res.status(200).json(new ApiResponce(200, notes, "Notes fetched successfully"))
-})
+}
 
-const getNoteById = asyncHandler(async (req, res) => {
+const getNoteById = async (req, res) => {
     const { projectId, noteId } = req.params
     await assertProjectMember(projectId, req.user._id)
     const note = await ProjectNote.aggregate([
@@ -36,18 +36,18 @@ const getNoteById = asyncHandler(async (req, res) => {
     ])
     if (!note.length) throw new ApiErrors(404, "Note not found")
     return res.status(200).json(new ApiResponce(200, note[0], "Note fetched successfully"))
-})
+}
 
-const createNote = asyncHandler(async (req, res) => {
+const createNote = async (req, res) => {
     const { projectId } = req.params
     const { content } = req.body
     if (!content) throw new ApiErrors(400, "Note content is required")
     await assertProjectMember(projectId, req.user._id)
     const note = await ProjectNote.create({ content, project: projectId, createdBy: req.user._id })
     return res.status(201).json(new ApiResponce(201, note, "Note created successfully"))
-})
+}
 
-const updateNote = asyncHandler(async (req, res) => {
+const updateNote = async (req, res) => {
     const { projectId, noteId } = req.params
     const { content } = req.body
     if (!content) throw new ApiErrors(400, "Note content is required")
@@ -59,9 +59,9 @@ const updateNote = asyncHandler(async (req, res) => {
     note.content = content
     await note.save()
     return res.status(200).json(new ApiResponce(200, note, "Note updated successfully"))
-})
+}
 
-const deleteNote = asyncHandler(async (req, res) => {
+const deleteNote = async (req, res) => {
     const { projectId, noteId } = req.params
     const { member } = await assertProjectMember(projectId, req.user._id)
     const note = await ProjectNote.findOne({ _id: noteId, project: projectId })
@@ -72,6 +72,6 @@ const deleteNote = asyncHandler(async (req, res) => {
         throw new ApiErrors(403, "You are not allowed to delete this note")
     await ProjectNote.findByIdAndDelete(noteId)
     return res.status(200).json(new ApiResponce(200, note, "Note deleted successfully"))
-})
+}
 
 export { getNotes, getNoteById, createNote, updateNote, deleteNote }

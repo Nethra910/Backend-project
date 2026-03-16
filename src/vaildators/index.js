@@ -1,8 +1,5 @@
 import { body } from "express-validator"
 
-// ─────────────────────────────────────────────
-//  AUTH VALIDATORS
-// ─────────────────────────────────────────────
 const userRegisterValidator = () => {
     return [
         body("email")
@@ -50,8 +47,6 @@ const userResetForgotPasswordValidator = () => {
         body("newPassword").notEmpty().withMessage("Password is required")
     ]
 }
-
-// ─────────────────────────────────────────────
 //  PROJECT VALIDATORS
 // ─────────────────────────────────────────────
 const createProjectValidator = () => {
@@ -70,10 +65,6 @@ const addMemberToPojectValidator = () => {
         body("role").notEmpty().withMessage("Role is required")
     ]
 }
-
-// ─────────────────────────────────────────────
-//  TASK VALIDATORS
-// ─────────────────────────────────────────────
 const createTaskValidator = () => {
     return [
         body("title")
@@ -117,10 +108,6 @@ const updateTaskStatusValidator = () => {
             .withMessage("Status must be one of: todo, in_process, done")
     ]
 }
-
-// ─────────────────────────────────────────────
-//  SUBTASK VALIDATORS
-// ─────────────────────────────────────────────
 const createSubTaskValidator = () => {
     return [
         body("title")
@@ -140,6 +127,21 @@ const updateSubTaskValidator = () => {
             .isBoolean().withMessage("isCompleted must be a boolean value")
     ]
 }
+const createNoteValidator = () => {
+    return [
+        body("content")
+            .trim()
+            .notEmpty().withMessage("Note content is required")
+    ]
+}
+
+const updateNoteValidator = () => {
+    return [
+        body("content")
+            .trim()
+            .notEmpty().withMessage("Note content is required")
+    ]
+}
 
 export {
     // Auth
@@ -155,7 +157,10 @@ export {
     createTaskValidator,
     updateTaskValidator,
     updateTaskStatusValidator,
-    // SubTask
+    // Subtask
     createSubTaskValidator,
-    updateSubTaskValidator
+    updateSubTaskValidator,
+    // Note
+    createNoteValidator,
+    updateNoteValidator
 }
